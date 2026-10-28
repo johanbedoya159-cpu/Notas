@@ -19,6 +19,8 @@ import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.EstudianteE
 import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.EstudianteGrupoEntidad;
 import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.GrupoEntidad;
 import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.NotaEntidad;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoParametrosServicio;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.notificaciones.NotificacionServicio;
 
 public final class RegistrarNotaEstudianteCasoUsoImpl implements RegistrarNotaEstudianteCasoUso {
 
@@ -28,9 +30,12 @@ public final class RegistrarNotaEstudianteCasoUsoImpl implements RegistrarNotaEs
 	private final GrupoRepositorio grupoRepositorio;
 	private final EstudianteGrupoRepositorio estudianteGrupoRepositorio;
 	private final NotaEstudianteRepositorio notaEstudianteRepositorio;
+	private final CatalogoParametrosServicio parametros;
+	private final NotificacionServicio notificaciones;
 	private final Clock reloj;
 
-	public RegistrarNotaEstudianteCasoUsoImpl(final RepositoriosRegistroNota repositorios, final Clock reloj) {
+	public RegistrarNotaEstudianteCasoUsoImpl(final RepositoriosRegistroNota repositorios,
+			final ServiciosRegistroNota servicios, final Clock reloj) {
 		final RepositoriosRegistroNota requeridos = ObjetoHelper.requerirDependencia(repositorios,
 				"los repositorios del registro de nota");
 		this.docenteRepositorio = ObjetoHelper.requerirDependencia(requeridos.docente(), "el repositorio de docentes");
@@ -42,6 +47,11 @@ public final class RegistrarNotaEstudianteCasoUsoImpl implements RegistrarNotaEs
 				"el repositorio de inscripciones");
 		this.notaEstudianteRepositorio = ObjetoHelper.requerirDependencia(requeridos.notaEstudiante(),
 				"el repositorio de notas de estudiantes");
+		final ServiciosRegistroNota externos = ObjetoHelper.requerirDependencia(servicios,
+				"los servicios externos del registro de nota");
+		this.parametros = ObjetoHelper.requerirDependencia(externos.parametros(), "el catálogo de parámetros");
+		this.notificaciones = ObjetoHelper.requerirDependencia(externos.notificaciones(),
+				"el servicio de notificaciones");
 		this.reloj = ObjetoHelper.requerirDependencia(reloj, "el reloj");
 	}
 
@@ -49,7 +59,7 @@ public final class RegistrarNotaEstudianteCasoUsoImpl implements RegistrarNotaEs
 	public void ejecutar(final RegistrarNotaEstudianteDominio datos) {
 		final RegistrarNotaEstudianteDominio registro = ObjetoHelper.obtenerValorPorDefecto(datos,
 				RegistrarNotaEstudianteDominio.crear(null, null, null, null));
-		registro.validarDatos();
+		registro.validarDatos(parametros);
 
 		final DocenteEntidad docente = registro.docente().validarExisteYEstaActivo(docenteRepositorio);
 		final EstudianteEntidad estudiante = registro.estudiante().validarExisteYEstaActivo(estudianteRepositorio);
@@ -68,6 +78,8 @@ public final class RegistrarNotaEstudianteCasoUsoImpl implements RegistrarNotaEs
 				nota);
 
 		notaEstudianteRepositorio.crear(registro.notaEstudiante().crearRegistro(estudianteGrupo, nota, ahora));
+		registro.notaEstudiante().crearNotificacion(estudiante, nota, grupo, parametros)
+				.ifPresent(notificaciones::notificar);
 	}
 
 }

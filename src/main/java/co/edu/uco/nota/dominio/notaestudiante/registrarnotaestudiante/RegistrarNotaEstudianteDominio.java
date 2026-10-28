@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import co.edu.uco.nota.crosscutting.helper.ObjetoHelper;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoParametrosServicio;
 
 public record RegistrarNotaEstudianteDominio(DocenteDominio docente, EstudianteDominio estudiante, NotaDominio nota,
 		NotaEstudianteDominio notaEstudiante) {
@@ -21,11 +22,11 @@ public record RegistrarNotaEstudianteDominio(DocenteDominio docente, EstudianteD
 				new NotaDominio(nota), new NotaEstudianteDominio(valor));
 	}
 
-	public void validarDatos() {
+	public void validarDatos(final CatalogoParametrosServicio parametros) {
 		docente.validarDatoObligatorio();
 		estudiante.validarDatoObligatorio();
 		nota.validarDatoObligatorio();
-		notaEstudiante.validarValor();
+		notaEstudiante.validarValor(parametros);
 	}
 
 }

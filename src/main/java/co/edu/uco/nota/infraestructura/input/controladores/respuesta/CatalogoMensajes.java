@@ -1,25 +1,22 @@
 package co.edu.uco.nota.infraestructura.input.controladores.respuesta;
 
-import java.util.Locale;
-
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import co.edu.uco.nota.crosscutting.mensajes.ClaveMensaje;
+import co.edu.uco.nota.servicios.input.dto.request.ObtenerMensajeRequestDTO;
+import co.edu.uco.nota.servicios.input.ports.ObtenerMensajeInputPort;
 
 @Component
 public class CatalogoMensajes {
 
-	private static final Locale ESPANOL_COLOMBIA = Locale.forLanguageTag("es-CO");
+	private final ObtenerMensajeInputPort obtenerMensaje;
 
-	private final MessageSource fuente;
-
-	public CatalogoMensajes(final MessageSource fuente) {
-		this.fuente = fuente;
+	public CatalogoMensajes(final ObtenerMensajeInputPort obtenerMensaje) {
+		this.obtenerMensaje = obtenerMensaje;
 	}
 
 	public String obtener(final ClaveMensaje clave, final Object... parametros) {
-		return fuente.getMessage(clave.getClave(), parametros, clave.getClave(), ESPANOL_COLOMBIA);
+		return obtenerMensaje.ejecutar(ObtenerMensajeRequestDTO.crear(clave, parametros));
 	}
 
 }

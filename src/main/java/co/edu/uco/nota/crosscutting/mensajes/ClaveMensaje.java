@@ -28,7 +28,10 @@ public enum ClaveMensaje {
 	PARAMETRO_INVALIDO("solicitud.parametro.invalido"),
 	RECURSO_NO_ENCONTRADO("solicitud.recurso.no-encontrado"),
 	METODO_NO_PERMITIDO("solicitud.metodo.no-permitido"),
-	ERROR_INESPERADO("error.inesperado");
+	ERROR_INESPERADO("error.inesperado"),
+	NOTIFICACION_NOTA_REGISTRADA_ASUNTO("notificacion.nota-registrada.asunto"),
+	NOTIFICACION_NOTA_REGISTRADA_APROBADA("notificacion.nota-registrada.cuerpo.aprobada"),
+	NOTIFICACION_NOTA_REGISTRADA_NO_APROBADA("notificacion.nota-registrada.cuerpo.no-aprobada");
 
 	private final String clave;
 

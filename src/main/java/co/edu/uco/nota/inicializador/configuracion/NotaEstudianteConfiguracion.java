@@ -10,6 +10,7 @@ import co.edu.uco.nota.servicios.casosuso.notaestudiante.consultarnotasregistrad
 import co.edu.uco.nota.servicios.casosuso.notaestudiante.registrarnotaestudiante.RegistrarNotaEstudianteCasoUso;
 import co.edu.uco.nota.servicios.casosuso.notaestudiante.registrarnotaestudiante.impl.RegistrarNotaEstudianteCasoUsoImpl;
 import co.edu.uco.nota.servicios.casosuso.notaestudiante.registrarnotaestudiante.impl.RepositoriosRegistroNota;
+import co.edu.uco.nota.servicios.casosuso.notaestudiante.registrarnotaestudiante.impl.ServiciosRegistroNota;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarNotasRegistradasInteractor;
 import co.edu.uco.nota.servicios.input.adapters.RegistrarNotaEstudianteInteractor;
 import co.edu.uco.nota.servicios.input.ports.ConsultarNotasRegistradasInputPort;
@@ -20,6 +21,8 @@ import co.edu.uco.nota.servicios.output.ports.repositorios.EstudianteRepositorio
 import co.edu.uco.nota.servicios.output.ports.repositorios.GrupoRepositorio;
 import co.edu.uco.nota.servicios.output.ports.repositorios.NotaEstudianteRepositorio;
 import co.edu.uco.nota.servicios.output.ports.repositorios.NotaRepositorio;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoParametrosServicio;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.notificaciones.NotificacionServicio;
 
 @Configuration
 public class NotaEstudianteConfiguracion {
@@ -28,10 +31,12 @@ public class NotaEstudianteConfiguracion {
 	RegistrarNotaEstudianteCasoUso registrarNotaEstudianteCasoUso(final DocenteRepositorio docenteRepositorio,
 			final EstudianteRepositorio estudianteRepositorio, final NotaRepositorio notaRepositorio,
 			final GrupoRepositorio grupoRepositorio, final EstudianteGrupoRepositorio estudianteGrupoRepositorio,
-			final NotaEstudianteRepositorio notaEstudianteRepositorio, final Clock reloj) {
-		return new RegistrarNotaEstudianteCasoUsoImpl(new RepositoriosRegistroNota(docenteRepositorio,
-				estudianteRepositorio, notaRepositorio, grupoRepositorio, estudianteGrupoRepositorio,
-				notaEstudianteRepositorio), reloj);
+			final NotaEstudianteRepositorio notaEstudianteRepositorio, final CatalogoParametrosServicio parametros,
+			final NotificacionServicio notificaciones, final Clock reloj) {
+		return new RegistrarNotaEstudianteCasoUsoImpl(
+				new RepositoriosRegistroNota(docenteRepositorio, estudianteRepositorio, notaRepositorio,
+						grupoRepositorio, estudianteGrupoRepositorio, notaEstudianteRepositorio),
+				new ServiciosRegistroNota(parametros, notificaciones), reloj);
 	}
 
 	@Bean

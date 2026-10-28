@@ -13,7 +13,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,14 +22,17 @@ import co.edu.uco.nota.crosscutting.excepcion.TipoError;
 import co.edu.uco.nota.crosscutting.mensajes.ClaveMensaje;
 import co.edu.uco.nota.crosscutting.paginacion.Pagina;
 import co.edu.uco.nota.datosprueba.DatosPrueba;
+import co.edu.uco.nota.datosprueba.ServiciosExternosEnMemoria;
 import co.edu.uco.nota.infraestructura.input.controladores.errores.ManejadorErrores;
 import co.edu.uco.nota.infraestructura.input.controladores.respuesta.CatalogoMensajes;
 import co.edu.uco.nota.infraestructura.input.filtros.TrazabilidadFiltro;
+import co.edu.uco.nota.servicios.casosuso.mensaje.obtenermensaje.impl.ObtenerMensajeCasoUsoImpl;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarEstudiantesGrupoInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarEstudiantesInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarGruposInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarNotasGrupoInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarNotasRegistradasInteractor;
+import co.edu.uco.nota.servicios.input.adapters.ObtenerMensajeInteractor;
 import co.edu.uco.nota.servicios.input.dto.request.RegistrarNotaEstudianteRequestDTO;
 
 class ControladoresTest {
@@ -41,11 +43,8 @@ class ControladoresTest {
 
 	@BeforeEach
 	void preparar() {
-		final ResourceBundleMessageSource fuente = new ResourceBundleMessageSource();
-		fuente.setBasename("mensajes/mensajes");
-		fuente.setDefaultEncoding("UTF-8");
-		fuente.setFallbackToSystemLocale(false);
-		final CatalogoMensajes catalogo = new CatalogoMensajes(fuente);
+		final CatalogoMensajes catalogo = new CatalogoMensajes(new ObtenerMensajeInteractor(
+				new ObtenerMensajeCasoUsoImpl(ServiciosExternosEnMemoria.catalogoLocal())));
 
 		final NotaEstudianteControlador notaEstudiante = new NotaEstudianteControlador(solicitud -> {
 			if (fallaAlRegistrar != null) {

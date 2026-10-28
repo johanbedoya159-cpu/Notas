@@ -27,7 +27,7 @@ public final class DatosPrueba {
 	}
 
 	public static EstudianteEntidad estudiante(final String estado) {
-		return new EstudianteEntidad(ESTUDIANTE, "1001", "Ana", "Pérez", estado);
+		return new EstudianteEntidad(ESTUDIANTE, "1001", "Ana", "Pérez", estado, "ana.perez@example.com");
 	}
 
 	public static GrupoEntidad grupo(final UUID docente, final String estado) {

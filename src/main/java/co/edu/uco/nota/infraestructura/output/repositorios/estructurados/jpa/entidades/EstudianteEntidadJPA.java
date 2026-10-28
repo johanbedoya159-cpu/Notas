@@ -27,6 +27,9 @@ public class EstudianteEntidadJPA {
 	@Column(name = "estado")
 	private String estado;
 
+	@Column(name = "correo")
+	private String correo;
+
 	public UUID getId() {
 		return id;
 	}
@@ -65,6 +68,14 @@ public class EstudianteEntidadJPA {
 
 	public void setEstado(final String estado) {
 		this.estado = estado;
+	}
+
+	public String getCorreo() {
+		return correo;
+	}
+
+	public void setCorreo(final String correo) {
+		this.correo = correo;
 	}
 
 }

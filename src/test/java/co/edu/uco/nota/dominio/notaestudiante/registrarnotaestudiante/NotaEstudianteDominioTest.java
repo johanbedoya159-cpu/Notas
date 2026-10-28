@@ -10,12 +10,15 @@ import org.junit.jupiter.api.Test;
 
 import co.edu.uco.nota.crosscutting.excepcion.NotaException;
 import co.edu.uco.nota.crosscutting.mensajes.ClaveMensaje;
+import co.edu.uco.nota.datosprueba.ServiciosExternosEnMemoria;
 
 class NotaEstudianteDominioTest {
 
+	private static final ServiciosExternosEnMemoria SERVICIOS = new ServiciosExternosEnMemoria();
+
 	private static int escalar(final String valor) {
 		final NotaEstudianteDominio nota = new NotaEstudianteDominio(new BigDecimal(valor));
-		nota.validarValor();
+		nota.validarValor(SERVICIOS.parametros);
 		return nota.obtenerValorEscalado();
 	}
 
@@ -40,7 +43,7 @@ class NotaEstudianteDominioTest {
 	void rechazaTresDecimales() {
 		final NotaEstudianteDominio nota = new NotaEstudianteDominio(new BigDecimal("1.001"));
 		assertEquals(ClaveMensaje.VALOR_CON_MAS_DE_DOS_DECIMALES,
-				assertThrows(NotaException.class, nota::validarValor).getClaveMensajeUsuario());
+				assertThrows(NotaException.class, () -> nota.validarValor(SERVICIOS.parametros)).getClaveMensajeUsuario());
 	}
 
 }

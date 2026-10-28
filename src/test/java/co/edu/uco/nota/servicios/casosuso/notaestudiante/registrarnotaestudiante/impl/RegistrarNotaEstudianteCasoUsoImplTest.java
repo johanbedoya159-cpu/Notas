@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,20 +22,26 @@ import org.junit.jupiter.api.Test;
 import co.edu.uco.nota.crosscutting.excepcion.NotaException;
 import co.edu.uco.nota.crosscutting.excepcion.TipoError;
 import co.edu.uco.nota.crosscutting.mensajes.ClaveMensaje;
+import co.edu.uco.nota.crosscutting.parametros.ClaveParametro;
 import co.edu.uco.nota.datosprueba.DatosPrueba;
 import co.edu.uco.nota.datosprueba.RepositoriosEnMemoria;
+import co.edu.uco.nota.datosprueba.ServiciosExternosEnMemoria;
 import co.edu.uco.nota.dominio.notaestudiante.registrarnotaestudiante.RegistrarNotaEstudianteDominio;
+import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.EstudianteEntidad;
 import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.GrupoEntidad;
 import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.NotaEstudianteEntidad;
+import co.edu.uco.nota.servicios.output.ports.serviciosexternos.notificaciones.NotificacionCorreo;
 
 class RegistrarNotaEstudianteCasoUsoImplTest {
 
 	private RepositoriosEnMemoria memoria;
+	private ServiciosExternosEnMemoria servicios;
 	private RegistrarNotaEstudianteCasoUsoImpl casoUso;
 
 	@BeforeEach
 	void preparar() {
 		memoria = new RepositoriosEnMemoria();
+		servicios = new ServiciosExternosEnMemoria();
 		final GrupoEntidad grupo = DatosPrueba.grupo(DOCENTE, "VIGENTE");
 		memoria.docentes.put(DOCENTE, DatosPrueba.docente(DOCENTE, "ACTIVO"));
 		memoria.docentes.put(OTRO_DOCENTE, DatosPrueba.docente(OTRO_DOCENTE, "ACTIVO"));
@@ -44,7 +51,7 @@ class RegistrarNotaEstudianteCasoUsoImplTest {
 		memoria.notas.put(NOTA, DatosPrueba.notaAbierta(grupo));
 		casoUso = new RegistrarNotaEstudianteCasoUsoImpl(new RepositoriosRegistroNota(memoria.docente,
 				memoria.estudiante, memoria.nota, memoria.grupo, memoria.estudianteGrupo, memoria.notaEstudiante),
-				Clock.fixed(AHORA, ZoneOffset.UTC));
+				new ServiciosRegistroNota(servicios.parametros, servicios.notificador), Clock.fixed(AHORA, ZoneOffset.UTC));
 	}
 
 	private void registrar(final UUID docente, final String valor) {
@@ -56,6 +63,7 @@ class RegistrarNotaEstudianteCasoUsoImplTest {
 		assertEquals(tipo, error.getTipo());
 		assertEquals(clave, error.getClaveMensajeUsuario());
 		assertTrue(memoria.notasEstudiantes.isEmpty());
+		assertTrue(servicios.notificaciones.isEmpty());
 	}
 
 	@Test
@@ -199,12 +207,66 @@ class RegistrarNotaEstudianteCasoUsoImplTest {
 	@DisplayName("Exige todas sus dependencias al construirse")
 	void exigeDependencias() {
 		final Clock reloj = Clock.systemUTC();
+		final ServiciosRegistroNota externos = new ServiciosRegistroNota(servicios.parametros, servicios.notificador);
 		final NotaException error = assertThrows(NotaException.class,
-				() -> new RegistrarNotaEstudianteCasoUsoImpl(null, reloj));
+				() -> new RegistrarNotaEstudianteCasoUsoImpl(null, externos, reloj));
 		assertEquals(TipoError.INESPERADO, error.getTipo());
 		final RepositoriosRegistroNota repositorios = new RepositoriosRegistroNota(memoria.docente,
 				memoria.estudiante, memoria.nota, memoria.grupo, memoria.estudianteGrupo, memoria.notaEstudiante);
-		assertThrows(NotaException.class, () -> new RegistrarNotaEstudianteCasoUsoImpl(repositorios, null));
+		assertThrows(NotaException.class, () -> new RegistrarNotaEstudianteCasoUsoImpl(repositorios, externos, null));
+		assertThrows(NotaException.class, () -> new RegistrarNotaEstudianteCasoUsoImpl(repositorios, null, reloj));
+		final ServiciosRegistroNota sinNotificador = new ServiciosRegistroNota(servicios.parametros, null);
+		assertThrows(NotaException.class,
+				() -> new RegistrarNotaEstudianteCasoUsoImpl(repositorios, sinNotificador, reloj));
+	}
+
+	@Test
+	@DisplayName("Avisa por correo al estudiante con la plantilla de aprobado")
+	void notificaAprobado() {
+		registrar(DOCENTE, "4.3");
+
+		assertEquals(1, servicios.notificaciones.size());
+		final NotificacionCorreo aviso = servicios.notificaciones.get(0);
+		assertEquals("ana.perez@example.com", aviso.destinatario());
+		assertEquals("Ana Pérez", aviso.nombreDestinatario());
+		assertEquals(ClaveMensaje.NOTIFICACION_NOTA_REGISTRADA_ASUNTO, aviso.plantillaAsunto());
+		assertEquals(ClaveMensaje.NOTIFICACION_NOTA_REGISTRADA_APROBADA, aviso.plantillaCuerpo());
+		assertEquals(List.of("Ana", "Parcial 1", "Ingeniería de Software 2", "4,30", "3,0"), aviso.parametros());
+	}
+
+	@Test
+	@DisplayName("Usa la nota aprobatoria del catálogo de parámetros para elegir la plantilla")
+	void notificaNoAprobadoSegunParametro() {
+		servicios.valoresParametros.put(ClaveParametro.NOTA_VALOR_APROBATORIO, "3.5");
+
+		registrar(DOCENTE, "3.4");
+
+		final NotificacionCorreo aviso = servicios.notificaciones.get(0);
+		assertEquals(ClaveMensaje.NOTIFICACION_NOTA_REGISTRADA_NO_APROBADA, aviso.plantillaCuerpo());
+		assertEquals("3,5", aviso.parametros().get(4));
+	}
+
+	@Test
+	@DisplayName("No envía aviso si el estudiante no tiene correo, pero sí registra la nota")
+	void noNotificaSinCorreo() {
+		memoria.estudiantes.put(ESTUDIANTE, new EstudianteEntidad(ESTUDIANTE, "1001", "Ana", "Pérez", "ACTIVO", " "));
+
+		registrar(DOCENTE, "4");
+
+		assertEquals(1, memoria.notasEstudiantes.size());
+		assertTrue(servicios.notificaciones.isEmpty());
+	}
+
+	@Test
+	@DisplayName("Valida el rango con los parámetros del catálogo")
+	void validaRangoConParametros() {
+		servicios.valoresParametros.put(ClaveParametro.NOTA_VALOR_MAXIMO, "4");
+		esperarError(TipoError.DATOS_INVALIDOS, ClaveMensaje.VALOR_FUERA_DE_RANGO, () -> registrar(DOCENTE, "4.5"));
+
+		servicios.valoresParametros.put(ClaveParametro.NOTA_VALOR_MAXIMO, "no es un número");
+		registrar(DOCENTE, "4.5");
+
+		assertEquals(450, memoria.notasEstudiantes.get(0).valor());
 	}
 
 }

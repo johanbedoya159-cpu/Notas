@@ -50,7 +50,7 @@ class ConsultasCasosUsoTest {
 		final GrupoEntidad grupo = DatosPrueba.grupo(DOCENTE, "VIGENTE");
 		memoria.grupos.put(GRUPO, grupo);
 		memoria.estudiantes.put(DatosPrueba.ESTUDIANTE, DatosPrueba.estudiante("ACTIVO"));
-		memoria.estudiantes.put(INEXISTENTE, new EstudianteEntidad(INEXISTENTE, "1002", "Bruno", "Díaz", "ACTIVO"));
+		memoria.estudiantes.put(INEXISTENTE, new EstudianteEntidad(INEXISTENTE, "1002", "Bruno", "Díaz", "ACTIVO", ""));
 		memoria.inscripciones.add(DatosPrueba.inscripcion(grupo));
 		memoria.notas.put(NOTA, DatosPrueba.notaAbierta(grupo));
 		memoria.notasEstudiantes.add(new NotaEstudianteEntidad(UUID.randomUUID(), DatosPrueba.inscripcion(grupo),

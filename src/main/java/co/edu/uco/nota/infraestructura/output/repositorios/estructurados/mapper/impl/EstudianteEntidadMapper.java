@@ -16,7 +16,7 @@ public class EstudianteEntidadMapper implements EntidadMapper<EstudianteEntidad,
 			return EstudianteEntidad.vacio();
 		}
 		return new EstudianteEntidad(entidadJPA.getId(), entidadJPA.getIdentificacion(), entidadJPA.getNombres(),
-				entidadJPA.getApellidos(), entidadJPA.getEstado());
+				entidadJPA.getApellidos(), entidadJPA.getEstado(), entidadJPA.getCorreo());
 	}
 
 	@Override
@@ -28,6 +28,7 @@ public class EstudianteEntidadMapper implements EntidadMapper<EstudianteEntidad,
 		entidadJPA.setNombres(origen.nombres());
 		entidadJPA.setApellidos(origen.apellidos());
 		entidadJPA.setEstado(origen.estado());
+		entidadJPA.setCorreo(origen.correo());
 		return entidadJPA;
 	}
 
