@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import co.edu.uco.nota.crosscutting.helper.TextoHelper;
 import co.edu.uco.nota.infraestructura.output.cache.CacheEnMemoria;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import co.edu.uco.nota.servicios.output.ports.serviciosexternos.secretos.BaulSecretosServicio;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -32,14 +32,14 @@ public class BaulSecretosKeyVaultAdapter implements BaulSecretosServicio {
 	private static final String VERSION_API = "7.4";
 	private static final int CAPACIDAD_CACHE = 50;
 
-	private final IdentidadAdministradaAzure identidad;
+	private final IdentidadAzure identidad;
 	private final ClienteHttpAzure http;
 	private final JsonMapper json;
 	private final String url;
 	private final Environment entorno;
 	private final CacheEnMemoria<String> cache;
 
-	public BaulSecretosKeyVaultAdapter(final IdentidadAdministradaAzure identidad, final ClienteHttpAzure http,
+	public BaulSecretosKeyVaultAdapter(final IdentidadAzure identidad, final ClienteHttpAzure http,
 			final JsonMapper json, @Value("${nota.baul.url:}") final String url,
 			@Value("${nota.baul.cache-minutos:60}") final long minutosCache, final Environment entorno,
 			final Clock reloj) {
@@ -76,7 +76,7 @@ public class BaulSecretosKeyVaultAdapter implements BaulSecretosServicio {
 			final URI uri = URI.create(url + "/secrets/" + URLEncoder.encode(nombre, StandardCharsets.UTF_8)
 					+ "?api-version=" + VERSION_API);
 			final HttpResponse<String> respuesta = http.enviar(HttpRequest.newBuilder(uri)
-					.timeout(IdentidadAdministradaAzure.TIEMPO_MAXIMO)
+					.timeout(IdentidadAzure.TIEMPO_MAXIMO)
 					.header("Authorization", "Bearer " + identidad.obtenerToken(RECURSO)).GET().build());
 
 			if (respuesta.statusCode() == 200) {

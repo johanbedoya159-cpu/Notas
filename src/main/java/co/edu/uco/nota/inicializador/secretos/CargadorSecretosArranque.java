@@ -14,7 +14,8 @@ import org.springframework.core.env.MapPropertySource;
 
 import co.edu.uco.nota.crosscutting.helper.TextoHelper;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.CredencialesAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.secretos.BaulSecretosKeyVaultAdapter;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -47,9 +48,14 @@ public class CargadorSecretosArranque implements EnvironmentPostProcessor {
 		final ClienteHttpAzure http = new ClienteHttpAzure(cliente);
 		final JsonMapper json = JsonMapper.shared();
 		final Clock reloj = Clock.systemUTC();
-		final IdentidadAdministradaAzure identidad = new IdentidadAdministradaAzure(http, json,
-				entorno.getProperty("nota.azure.identidad.endpoint", ""),
-				entorno.getProperty("nota.azure.identidad.encabezado", ""), reloj);
+		final IdentidadAzure identidad = new IdentidadAzure(http, json,
+				new CredencialesAzure(entorno.getProperty("nota.azure.identidad.endpoint", ""),
+						entorno.getProperty("nota.azure.identidad.encabezado", ""),
+						entorno.getProperty("nota.azure.aplicacion.autoridad", ""),
+						entorno.getProperty("nota.azure.aplicacion.inquilino", ""),
+						entorno.getProperty("nota.azure.aplicacion.cliente", ""),
+						entorno.getProperty("nota.azure.aplicacion.secreto", "")),
+				reloj);
 		final BaulSecretosKeyVaultAdapter baul = new BaulSecretosKeyVaultAdapter(identidad, http, json, url, 1,
 				entorno, reloj);
 

@@ -74,4 +74,20 @@ class CargadorSecretosArranqueTest {
 		assertThrows(IllegalStateException.class, () -> cargador.postProcessEnvironment(entorno, aplicacion));
 	}
 
+	@Test
+	@DisplayName("También funciona con credenciales de aplicación cuando no hay identidad administrada")
+	void cargaConCredencialesDeAplicacion() {
+		servidor.responder("/inquilino/oauth2/v2.0/token", 200, "{\"access_token\":\"t\",\"expires_in\":\"3600\"}");
+		servidor.responder("/secrets/db-password", 200, "{\"value\":\"clave-app\"}");
+		final MockEnvironment entorno = new MockEnvironment().withProperty("nota.baul.url", servidor.url())
+				.withProperty("nota.azure.aplicacion.autoridad", servidor.url())
+				.withProperty("nota.azure.aplicacion.inquilino", "inquilino")
+				.withProperty("nota.azure.aplicacion.cliente", "cliente")
+				.withProperty("nota.azure.aplicacion.secreto", "secreto");
+
+		cargador.postProcessEnvironment(entorno, aplicacion);
+
+		assertEquals("clave-app", entorno.getProperty(CargadorSecretosArranque.PROPIEDAD_CLAVE_BASE_DATOS));
+	}
+
 }

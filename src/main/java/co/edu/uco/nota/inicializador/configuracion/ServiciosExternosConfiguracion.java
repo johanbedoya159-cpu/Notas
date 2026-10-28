@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.CredencialesAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
@@ -23,10 +24,15 @@ public class ServiciosExternosConfiguracion {
 	}
 
 	@Bean
-	IdentidadAdministradaAzure identidadAdministradaAzure(final ClienteHttpAzure http, final JsonMapper json,
+	IdentidadAzure identidadAzure(final ClienteHttpAzure http, final JsonMapper json,
 			@Value("${nota.azure.identidad.endpoint:}") final String endpoint,
-			@Value("${nota.azure.identidad.encabezado:}") final String encabezado, final Clock reloj) {
-		return new IdentidadAdministradaAzure(http, json, endpoint, encabezado, reloj);
+			@Value("${nota.azure.identidad.encabezado:}") final String encabezado,
+			@Value("${nota.azure.aplicacion.autoridad:}") final String autoridad,
+			@Value("${nota.azure.aplicacion.inquilino:}") final String inquilino,
+			@Value("${nota.azure.aplicacion.cliente:}") final String cliente,
+			@Value("${nota.azure.aplicacion.secreto:}") final String secreto, final Clock reloj) {
+		return new IdentidadAzure(http, json,
+				new CredencialesAzure(endpoint, encabezado, autoridad, inquilino, cliente, secreto), reloj);
 	}
 
 	@Bean(name = "ejecutorNotificaciones", destroyMethod = "close")

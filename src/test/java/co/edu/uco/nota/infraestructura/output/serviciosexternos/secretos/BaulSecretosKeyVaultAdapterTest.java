@@ -19,7 +19,7 @@ import co.edu.uco.nota.datosprueba.DatosPrueba;
 import co.edu.uco.nota.datosprueba.RelojMovil;
 import co.edu.uco.nota.datosprueba.ServidorHttpPrueba;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import tools.jackson.databind.json.JsonMapper;
 
 class BaulSecretosKeyVaultAdapterTest {
@@ -27,7 +27,7 @@ class BaulSecretosKeyVaultAdapterTest {
 	private ServidorHttpPrueba servidor;
 	private RelojMovil reloj;
 	private ClienteHttpAzure http;
-	private IdentidadAdministradaAzure identidad;
+	private IdentidadAzure identidad;
 
 	@BeforeEach
 	void preparar() throws IOException {
@@ -36,7 +36,7 @@ class BaulSecretosKeyVaultAdapterTest {
 				+ DatosPrueba.AHORA.plus(Duration.ofHours(1)).getEpochSecond() + "\"}");
 		reloj = new RelojMovil(DatosPrueba.AHORA);
 		http = new ClienteHttpAzure(HttpClient.newHttpClient());
-		identidad = new IdentidadAdministradaAzure(http, JsonMapper.shared(), servidor.url() + "/msi/token", "x",
+		identidad = new IdentidadAzure(http, JsonMapper.shared(), servidor.url() + "/msi/token", "x",
 				reloj);
 	}
 
@@ -90,7 +90,7 @@ class BaulSecretosKeyVaultAdapterTest {
 
 		servidor.responder("/msi/token", 500, "{}");
 		final BaulSecretosKeyVaultAdapter sinToken = new BaulSecretosKeyVaultAdapter(
-				new IdentidadAdministradaAzure(http, JsonMapper.shared(), servidor.url() + "/msi/token", "x", reloj),
+				new IdentidadAzure(http, JsonMapper.shared(), servidor.url() + "/msi/token", "x", reloj),
 				http, JsonMapper.shared(), servidor.url(), 60, new MockEnvironment(), reloj);
 		assertEquals(Optional.empty(), sinToken.obtenerSecreto("db-password"));
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.uco.nota.crosscutting.parametros.ClaveParametro;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.catalogos.CatalogoAppConfigurationAdapter;
 import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoParametrosServicio;
 import co.edu.uco.nota.servicios.output.ports.serviciosexternos.notificaciones.NotificacionCorreo;
@@ -25,7 +25,7 @@ public final class ServiciosExternosEnMemoria {
 
 	public static CatalogoAppConfigurationAdapter catalogoLocal() {
 		return new CatalogoAppConfigurationAdapter(
-				new IdentidadAdministradaAzure(null, null, "", "", Clock.systemUTC()), null, null, "", 300,
+				new IdentidadAzure(null, null, "", "", Clock.systemUTC()), null, null, "", 300,
 				Clock.systemUTC());
 	}
 

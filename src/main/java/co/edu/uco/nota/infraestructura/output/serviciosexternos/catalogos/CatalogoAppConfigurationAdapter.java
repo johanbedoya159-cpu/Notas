@@ -25,7 +25,7 @@ import co.edu.uco.nota.crosscutting.mensajes.ClaveMensaje;
 import co.edu.uco.nota.crosscutting.parametros.ClaveParametro;
 import co.edu.uco.nota.infraestructura.output.cache.CacheEnMemoria;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoMensajesServicio;
 import co.edu.uco.nota.servicios.output.ports.serviciosexternos.catalogos.CatalogoParametrosServicio;
 import tools.jackson.databind.json.JsonMapper;
@@ -42,14 +42,14 @@ public class CatalogoAppConfigurationAdapter implements CatalogoMensajesServicio
 	private static final String VERSION_API = "1.0";
 	private static final int CAPACIDAD_CACHE = 500;
 
-	private final IdentidadAdministradaAzure identidad;
+	private final IdentidadAzure identidad;
 	private final ClienteHttpAzure http;
 	private final JsonMapper json;
 	private final String endpoint;
 	private final CacheEnMemoria<String> cache;
 	private final Properties mensajesLocales;
 
-	public CatalogoAppConfigurationAdapter(final IdentidadAdministradaAzure identidad, final ClienteHttpAzure http,
+	public CatalogoAppConfigurationAdapter(final IdentidadAzure identidad, final ClienteHttpAzure http,
 			final JsonMapper json, @Value("${nota.catalogo.endpoint:}") final String endpoint,
 			@Value("${nota.catalogo.cache-segundos:300}") final long segundosCache, final Clock reloj) {
 		this.identidad = identidad;
@@ -94,7 +94,7 @@ public class CatalogoAppConfigurationAdapter implements CatalogoMensajesServicio
 			final URI uri = URI.create(endpoint + "/kv/" + URLEncoder.encode(clave, StandardCharsets.UTF_8)
 					+ "?api-version=" + VERSION_API);
 			final HttpResponse<String> respuesta = http.enviar(HttpRequest.newBuilder(uri)
-					.timeout(IdentidadAdministradaAzure.TIEMPO_MAXIMO)
+					.timeout(IdentidadAzure.TIEMPO_MAXIMO)
 					.header("Authorization", "Bearer " + identidad.obtenerToken(RECURSO))
 					.header("Accept", "application/vnd.microsoft.appconfig.kv+json").GET().build());
 

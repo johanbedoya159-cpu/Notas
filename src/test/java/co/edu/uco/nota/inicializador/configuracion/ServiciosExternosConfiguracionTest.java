@@ -25,7 +25,7 @@ class ServiciosExternosConfiguracionTest {
 		final ServiciosExternosConfiguracion externos = new ServiciosExternosConfiguracion();
 		final ClienteHttpAzure http = externos.clienteHttpAzure();
 		assertNotNull(http);
-		assertFalse(externos.identidadAdministradaAzure(http, JsonMapper.shared(), "", "", Clock.systemUTC())
+		assertFalse(externos.identidadAzure(http, JsonMapper.shared(), "", "", "", "", "", "", Clock.systemUTC())
 				.estaDisponible());
 		try (ExecutorService ejecutor = externos.ejecutorNotificaciones()) {
 			assertFalse(ejecutor.isShutdown());

@@ -20,7 +20,7 @@ import co.edu.uco.nota.datosprueba.RelojMovil;
 import co.edu.uco.nota.datosprueba.ServiciosExternosEnMemoria;
 import co.edu.uco.nota.datosprueba.ServidorHttpPrueba;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import tools.jackson.databind.json.JsonMapper;
 
 class CatalogoAppConfigurationAdapterTest {
@@ -41,7 +41,7 @@ class CatalogoAppConfigurationAdapterTest {
 		final ClienteHttpAzure http = new ClienteHttpAzure(HttpClient.newHttpClient());
 		final JsonMapper json = JsonMapper.shared();
 		catalogo = new CatalogoAppConfigurationAdapter(
-				new IdentidadAdministradaAzure(http, json, servidor.url() + "/msi/token", "x", reloj), http, json,
+				new IdentidadAzure(http, json, servidor.url() + "/msi/token", "x", reloj), http, json,
 				servidor.url() + "/", 60, reloj);
 	}
 
@@ -104,7 +104,7 @@ class CatalogoAppConfigurationAdapterTest {
 
 		servidor.responder("/msi/token", 500, "{}");
 		final CatalogoAppConfigurationAdapter sinToken = new CatalogoAppConfigurationAdapter(
-				new IdentidadAdministradaAzure(new ClienteHttpAzure(HttpClient.newHttpClient()), JsonMapper.shared(),
+				new IdentidadAzure(new ClienteHttpAzure(HttpClient.newHttpClient()), JsonMapper.shared(),
 						servidor.url() + "/msi/token", "x", reloj),
 				new ClienteHttpAzure(HttpClient.newHttpClient()), JsonMapper.shared(), servidor.url(), 0, reloj);
 		assertEquals("3", sinToken.obtenerValor(ClaveParametro.NOTA_VALOR_APROBATORIO));

@@ -20,7 +20,7 @@ import co.edu.uco.nota.crosscutting.helper.MensajeHelper;
 import co.edu.uco.nota.crosscutting.helper.ObjetoHelper;
 import co.edu.uco.nota.crosscutting.helper.TextoHelper;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.ClienteHttpAzure;
-import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAdministradaAzure;
+import co.edu.uco.nota.infraestructura.output.serviciosexternos.azure.IdentidadAzure;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.notificaciones.dto.ContenidoCorreoDTO;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.notificaciones.dto.CorreoAcsDTO;
 import co.edu.uco.nota.infraestructura.output.serviciosexternos.notificaciones.dto.DestinatariosCorreoDTO;
@@ -119,7 +119,7 @@ public class NotificacionCorreoAcsAdapter implements NotificacionServicio {
 						List.of(new DireccionCorreoDTO(notificacion.destinatario(), notificacion.nombreDestinatario()))));
 
 		final HttpResponse<String> respuesta = http.enviar(FirmadorHmacAcs.crearSolicitud(conexion.get(), RUTA_ENVIO,
-				json.writeValueAsString(correo), reloj.instant(), IdentidadAdministradaAzure.TIEMPO_MAXIMO));
+				json.writeValueAsString(correo), reloj.instant(), IdentidadAzure.TIEMPO_MAXIMO));
 
 		if (respuesta.statusCode() == 202) {
 			LOGGER.info("El servicio de correo aceptó la notificación de nota registrada.");
