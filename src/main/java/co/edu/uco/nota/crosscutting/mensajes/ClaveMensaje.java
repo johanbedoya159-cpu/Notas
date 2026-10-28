@@ -29,6 +29,9 @@ public enum ClaveMensaje {
 	RECURSO_NO_ENCONTRADO("solicitud.recurso.no-encontrado"),
 	METODO_NO_PERMITIDO("solicitud.metodo.no-permitido"),
 	ERROR_INESPERADO("error.inesperado"),
+	ACCESO_DENEGADO("solicitud.acceso.denegado"),
+	CORREO_OBLIGATORIO("estudiante.correo.obligatorio"),
+	ESTUDIANTE_SIN_REGISTRO("estudiante.correo.no-registrado"),
 	NOTIFICACION_NOTA_REGISTRADA_ASUNTO("notificacion.nota-registrada.asunto"),
 	NOTIFICACION_NOTA_REGISTRADA_APROBADA("notificacion.nota-registrada.cuerpo.aprobada"),
 	NOTIFICACION_NOTA_REGISTRADA_NO_APROBADA("notificacion.nota-registrada.cuerpo.no-aprobada");

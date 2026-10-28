@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 import co.edu.uco.nota.servicios.casosuso.estudiante.consultarestudiantes.ConsultarEstudiantesCasoUso;
 import co.edu.uco.nota.servicios.casosuso.estudiante.consultarestudiantes.impl.ConsultarEstudiantesCasoUsoImpl;
+import co.edu.uco.nota.servicios.casosuso.estudiante.consultarmisnotas.ConsultarMisNotasCasoUso;
+import co.edu.uco.nota.servicios.casosuso.estudiante.consultarmisnotas.impl.ConsultarMisNotasCasoUsoImpl;
 import co.edu.uco.nota.servicios.casosuso.grupo.consultarestudiantesgrupo.ConsultarEstudiantesGrupoCasoUso;
 import co.edu.uco.nota.servicios.casosuso.grupo.consultarestudiantesgrupo.impl.ConsultarEstudiantesGrupoCasoUsoImpl;
 import co.edu.uco.nota.servicios.casosuso.grupo.consultargrupos.ConsultarGruposCasoUso;
@@ -14,14 +16,17 @@ import co.edu.uco.nota.servicios.casosuso.nota.consultarnotasgrupo.impl.Consulta
 import co.edu.uco.nota.servicios.input.adapters.ConsultarEstudiantesGrupoInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarEstudiantesInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarGruposInteractor;
+import co.edu.uco.nota.servicios.input.adapters.ConsultarMisNotasInteractor;
 import co.edu.uco.nota.servicios.input.adapters.ConsultarNotasGrupoInteractor;
 import co.edu.uco.nota.servicios.input.ports.ConsultarEstudiantesGrupoInputPort;
 import co.edu.uco.nota.servicios.input.ports.ConsultarEstudiantesInputPort;
 import co.edu.uco.nota.servicios.input.ports.ConsultarGruposInputPort;
+import co.edu.uco.nota.servicios.input.ports.ConsultarMisNotasInputPort;
 import co.edu.uco.nota.servicios.input.ports.ConsultarNotasGrupoInputPort;
 import co.edu.uco.nota.servicios.output.ports.repositorios.EstudianteGrupoRepositorio;
 import co.edu.uco.nota.servicios.output.ports.repositorios.EstudianteRepositorio;
 import co.edu.uco.nota.servicios.output.ports.repositorios.GrupoRepositorio;
+import co.edu.uco.nota.servicios.output.ports.repositorios.NotaEstudianteRepositorio;
 import co.edu.uco.nota.servicios.output.ports.repositorios.NotaRepositorio;
 
 @Configuration
@@ -68,6 +73,19 @@ public class ConsultasConfiguracion {
 	@Bean
 	ConsultarNotasGrupoInputPort consultarNotasGrupoInputPort(final ConsultarNotasGrupoCasoUso casoUso) {
 		return new ConsultarNotasGrupoInteractor(casoUso);
+	}
+
+	@Bean
+	ConsultarMisNotasCasoUso consultarMisNotasCasoUso(final EstudianteRepositorio estudianteRepositorio,
+			final EstudianteGrupoRepositorio estudianteGrupoRepositorio, final NotaRepositorio notaRepositorio,
+			final NotaEstudianteRepositorio notaEstudianteRepositorio) {
+		return new ConsultarMisNotasCasoUsoImpl(estudianteRepositorio, estudianteGrupoRepositorio, notaRepositorio,
+				notaEstudianteRepositorio);
+	}
+
+	@Bean
+	ConsultarMisNotasInputPort consultarMisNotasInputPort(final ConsultarMisNotasCasoUso casoUso) {
+		return new ConsultarMisNotasInteractor(casoUso);
 	}
 
 }

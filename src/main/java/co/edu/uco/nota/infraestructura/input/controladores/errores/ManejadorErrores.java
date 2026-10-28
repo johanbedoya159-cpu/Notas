@@ -31,6 +31,7 @@ public class ManejadorErrores {
 			TipoError.NO_ENCONTRADO, HttpStatus.NOT_FOUND,
 			TipoError.REGLA_NEGOCIO, HttpStatus.UNPROCESSABLE_CONTENT,
 			TipoError.CONFLICTO, HttpStatus.CONFLICT,
+			TipoError.ACCESO_DENEGADO, HttpStatus.FORBIDDEN,
 			TipoError.INESPERADO, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	private final CatalogoMensajes catalogo;

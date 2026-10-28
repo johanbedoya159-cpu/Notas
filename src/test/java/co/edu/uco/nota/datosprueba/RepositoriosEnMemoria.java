@@ -49,6 +49,11 @@ public final class RepositoriosEnMemoria {
 		}
 
 		@Override
+		public Optional<EstudianteEntidad> consultarPorCorreo(final String correo) {
+			return estudiantes.values().stream().filter(item -> item.correo().equalsIgnoreCase(correo)).findFirst();
+		}
+
+		@Override
 		public Pagina<EstudianteEntidad> consultar(final EstudianteCriterio criterio) {
 			criteriosRecibidos.add(criterio);
 			return paginar(new ArrayList<>(estudiantes.values()),
@@ -109,7 +114,7 @@ public final class RepositoriosEnMemoria {
 			return paginar(notasEstudiantes,
 					item -> (UUIDHelper.esPorDefecto(criterio.estudianteGrupo())
 							|| item.estudianteGrupo().id().equals(criterio.estudianteGrupo()))
-							&& item.nota().id().equals(criterio.nota()),
+							&& (UUIDHelper.esPorDefecto(criterio.nota()) || item.nota().id().equals(criterio.nota())),
 					criterio.paginacion());
 		}
 

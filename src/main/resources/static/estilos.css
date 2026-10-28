@@ -676,6 +676,84 @@ main {
 	color: var(--tinta-suave);
 }
 
+.sesion {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	font-size: 0.9375rem;
+}
+
+.sesion-usuario {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 500;
+}
+
+.vista-mis-notas {
+	max-width: 46rem;
+	margin: 0 auto;
+}
+
+.mis-grupos {
+	display: grid;
+	gap: 1rem;
+	margin-top: 1.25rem;
+}
+
+.mi-grupo {
+	background: var(--hoja);
+	border-radius: 16px;
+	box-shadow: var(--sombra);
+	overflow: hidden;
+}
+
+.mi-grupo-encabezado {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid var(--linea);
+}
+
+.mi-grupo-nombre {
+	font-size: 1.125rem;
+	font-weight: 700;
+}
+
+.mis-notas {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.mi-nota {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.75rem 1.25rem;
+	border-bottom: 1px solid var(--linea);
+}
+
+.mi-nota .aprobada {
+	color: var(--verde);
+}
+
+.mi-nota .reprobada {
+	color: var(--rojo);
+}
+
+.mi-nota .pendiente {
+	color: var(--tinta-suave);
+}
+
+.mi-grupo-resumen {
+	padding: 0.75rem 1.25rem;
+	color: var(--tinta-suave);
+	font-size: 0.875rem;
+}
+
 @media (max-width: 52rem) {
 	.vista-planilla {
 		grid-template-columns: 1fr;

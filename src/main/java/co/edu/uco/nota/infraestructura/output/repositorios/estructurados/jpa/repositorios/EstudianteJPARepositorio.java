@@ -1,5 +1,6 @@
 package co.edu.uco.nota.infraestructura.output.repositorios.estructurados.jpa.repositorios;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,7 @@ import co.edu.uco.nota.infraestructura.output.repositorios.estructurados.jpa.ent
 @Repository
 public interface EstudianteJPARepositorio extends JpaRepository<EstudianteEntidadJPA, UUID>,
 		JpaSpecificationExecutor<EstudianteEntidadJPA> {
+
+	Optional<EstudianteEntidadJPA> findFirstByCorreoIgnoreCase(String correo);
 
 }
