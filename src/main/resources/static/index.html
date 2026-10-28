@@ -21,10 +21,14 @@
 				<p class="marca-institucion">Universidad Católica de Oriente</p>
 			</div>
 		</div>
-		<nav class="vistas" aria-label="Secciones">
+		<nav id="vistas" class="vistas" aria-label="Secciones">
 			<button type="button" class="vista" data-vista="planilla" aria-current="page">Registrar notas</button>
 			<button type="button" class="vista" data-vista="estudiantes">Buscar estudiante</button>
 		</nav>
+		<div id="sesion" class="sesion" hidden>
+			<p class="sesion-usuario"><span id="sesion-nombre"></span> <span id="sesion-rol" class="etiqueta"></span></p>
+			<a class="enlace" href=".auth/logout?post_logout_redirect_uri=/">Cerrar sesión</a>
+		</div>
 	</header>
 
 	<main>
@@ -65,6 +69,19 @@
 					</div>
 				</div>
 			</section>
+		</section>
+
+		<section id="vista-mis-notas" class="vista-mis-notas" hidden aria-labelledby="mis-notas-titulo">
+			<h1 id="mis-notas-titulo" class="grupo-nombre">Mis notas</h1>
+			<p class="grupo-detalle">Estas son las notas que tus docentes han registrado en cada grupo.</p>
+			<div id="mis-grupos" class="mis-grupos" aria-live="polite"></div>
+		</section>
+
+		<section id="vista-sin-rol" class="vista-mis-notas" hidden>
+			<div class="vacio">
+				<p class="vacio-titulo">Tu cuenta no tiene un rol asignado</p>
+				<p>Pide que te asignen el rol Profesor o Estudiante en la aplicación nota-login de Microsoft Entra ID.</p>
+			</div>
 		</section>
 
 		<section id="vista-estudiantes" class="vista-estudiantes" hidden aria-labelledby="estudiantes-titulo">

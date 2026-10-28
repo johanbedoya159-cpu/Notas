@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import co.edu.uco.nota.crosscutting.helper.TextoHelper;
 import co.edu.uco.nota.crosscutting.paginacion.Pagina;
 import co.edu.uco.nota.infraestructura.output.repositorios.estructurados.jpa.entidades.EstudianteEntidadJPA;
 import co.edu.uco.nota.infraestructura.output.repositorios.estructurados.jpa.especificaciones.EspecificacionesJPA;
@@ -32,6 +33,14 @@ public class EstudianteRepositorioAdapter implements EstudianteRepositorio {
 	@Override
 	public Optional<EstudianteEntidad> consultarPorId(final UUID id) {
 		return repositorio.findById(id).map(mapper::convertirAEntidad);
+	}
+
+	@Override
+	public Optional<EstudianteEntidad> consultarPorCorreo(final String correo) {
+		if (TextoHelper.estaVacio(correo)) {
+			return Optional.empty();
+		}
+		return repositorio.findFirstByCorreoIgnoreCase(TextoHelper.aplicarTrim(correo)).map(mapper::convertirAEntidad);
 	}
 
 	@Override

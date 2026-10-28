@@ -451,7 +451,68 @@ function cambiarVista(vista) {
 	}
 }
 
-function iniciar() {
+const ROLES = { PROFESOR: "Profesor", ESTUDIANTE: "Estudiante", SIN_ROL: "Sin rol" };
+
+function pintarSesion(sesion) {
+	if (!sesion.correo) return;
+	$("sesion-nombre").textContent = sesion.nombre || sesion.correo;
+	$("sesion-nombre").title = sesion.correo;
+	$("sesion-rol").textContent = ROLES[sesion.rol] ?? sesion.rol;
+	$("sesion").hidden = false;
+}
+
+function mostrarSolo(seccion) {
+	$("vistas").hidden = true;
+	["vista-planilla", "vista-estudiantes", "vista-mis-notas", "vista-sin-rol"].forEach((id) => {
+		$(id).hidden = id !== seccion;
+	});
+}
+
+function crearTarjetaGrupo(grupo) {
+	const registradas = grupo.notas.filter((nota) => nota.valor !== null && nota.valor !== undefined);
+	return el("article", { class: "mi-grupo" },
+		el("header", { class: "mi-grupo-encabezado" },
+			el("div", {},
+				el("h2", { class: "mi-grupo-nombre" }, grupo.nombre),
+				el("p", { class: "grupo-detalle" }, `${grupo.codigo} · ${grupo.nombreDocente}`)),
+			el("span", { class: `etiqueta${grupo.estado === "VIGENTE" ? " vigente" : ""}` }, grupo.estado === "VIGENTE" ? "Vigente" : "Cerrado")),
+		grupo.notas.length === 0
+			? el("p", { class: "mensaje" }, "Este grupo todavía no tiene notas programadas.")
+			: el("ul", { class: "mis-notas" }, grupo.notas.map((nota) => {
+				const tieneValor = nota.valor !== null && nota.valor !== undefined;
+				const valor = Number(nota.valor);
+				return el("li", { class: "mi-nota" },
+					el("span", {}, nota.nombre),
+					tieneValor
+						? el("strong", { class: valor >= APRUEBA ? "aprobada" : "reprobada" }, formatoNota.format(valor))
+						: el("span", { class: "pendiente" }, "Pendiente"));
+			})),
+		el("p", { class: "mi-grupo-resumen" }, `${registradas.length} de ${grupo.notas.length} notas registradas`));
+}
+
+async function cargarMisNotas() {
+	const contenedor = $("mis-grupos");
+	contenedor.replaceChildren(el("p", { class: "estado-texto" }, "Buscando tus notas…"));
+	try {
+		const { datos } = await api("/mis-notas");
+		contenedor.replaceChildren(...(datos.length === 0
+			? [el("p", { class: "mensaje" }, "No estás inscrito en ningún grupo.")]
+			: datos.map(crearTarjetaGrupo)));
+	} catch (error) {
+		contenedor.replaceChildren(el("p", { class: "mensaje" }, mensajeError(error)));
+	}
+}
+
+async function consultarSesion() {
+	try {
+		const { datos } = await api("/sesion");
+		return datos;
+	} catch {
+		return { correo: "", nombre: "", rol: "PROFESOR" };
+	}
+}
+
+function iniciarProfesor() {
 	$("buscar-grupo").addEventListener("input", retrasar(() => cargarGrupos(true)));
 	$("mas-grupos").addEventListener("click", () => {
 		estado.paginaGrupos += 1;
@@ -473,6 +534,19 @@ function iniciar() {
 	});
 	document.querySelectorAll(".vista").forEach((boton) => boton.addEventListener("click", () => cambiarVista(boton.dataset.vista)));
 	cargarGrupos(true);
+}
+
+async function iniciar() {
+	const sesion = await consultarSesion();
+	pintarSesion(sesion);
+	if (sesion.rol === "ESTUDIANTE") {
+		mostrarSolo("vista-mis-notas");
+		cargarMisNotas();
+	} else if (sesion.rol === "SIN_ROL") {
+		mostrarSolo("vista-sin-rol");
+	} else {
+		iniciarProfesor();
+	}
 }
 
 iniciar();

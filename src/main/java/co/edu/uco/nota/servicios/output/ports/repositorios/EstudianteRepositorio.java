@@ -1,5 +1,6 @@
 package co.edu.uco.nota.servicios.output.ports.repositorios;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import co.edu.uco.nota.servicios.output.ports.repositorios.criterios.EstudianteCriterio;
@@ -7,5 +8,7 @@ import co.edu.uco.nota.servicios.output.ports.repositorios.entidades.EstudianteE
 
 public interface EstudianteRepositorio extends ConsultarPorIdRepositorio<UUID, EstudianteEntidad>,
 		ConsultarPorCriterioRepositorio<EstudianteEntidad, EstudianteCriterio> {
+
+	Optional<EstudianteEntidad> consultarPorCorreo(String correo);
 
 }
